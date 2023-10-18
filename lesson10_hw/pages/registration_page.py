@@ -1,6 +1,6 @@
 from selene import browser, have, be, command
 import os
-
+from lesson10_hw.users.user_registration import User, Gender
 
 class RegistrationPage:
     def open(self):
@@ -9,55 +9,48 @@ class RegistrationPage:
         browser.all('[id^google_ads][id$=container__]').with_(timeout=10).wait_until(have.size_less_than_or_equal(3))
         browser.all('[id^=google_ads][id$=container__]').perform(command.js.remove)
 
-    def type_first_name(self, value):
-        browser.element('#firstName').type(value)
-
-    def type_last_name(self, value):
-        browser.element('#lastName').type(value)
-
-    def type_email(self, value):
-        browser.element('#userEmail').type(value)
-
-    def click_gender(self, value):
-        # browser.element('[for="gender-radio-1"]').click()
-        browser.all('[name=gender]').element_by(have.value(value)).element('..').click()
-
-    def type_number(self, value):
-        browser.element('#userNumber').type(value)
-        pass
-
-    def type_date_of_birth(self, year, month, day):
+    def register(self, user: User):
+        browser.element('#firstName').type(user.first_name)
+        browser.element('#lastName').type(user.last_name)
+        browser.element('#userEmail').type(user.email)
+        browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
+        # browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
+        browser.element('#userNumber').type(user.number)
+        # browser.element('#dateOfBirthInput').click()
+        # browser.element('.react-datepicker__year-select').type('1999')
+        # browser.element('.react-datepicker__month-select').type('August')
+        # browser.element('.react-datepicker__day--09').click()
         browser.element('#dateOfBirthInput').click()
-        browser.element('.react-datepicker__year-select').type(year)
-        browser.element('.react-datepicker__month-select').type(month)
-        browser.element(f'.react-datepicker__day--0{day}').click()
+        browser.element('.react-datepicker__year-select').type(user.date_of_birth.year)
+        browser.element('.react-datepicker__month-select').type(user.date_of_birth.strftime('%B'))
+        browser.element(f'.react-datepicker__day--00{user.date_of_birth.day}').click()
+        browser.element('#subjectsInput').type(user.subject).press_enter()
+        browser.all('.custom-checkbox').element_by(have.exact_text(user.hobbies)).click()
+        # browser.element('#uploadPicture').type(path(user.picture))
+        browser.element("#uploadPicture").send_keys(os.path.abspath(f'files/{user.picture}'))
+        browser.element('#currentAddress').type(user.address)
+        browser.element('#react-select-3-input').type(user.state).press_enter()
+        browser.element('#react-select-4-input').type(user.city).press_enter()
+        browser.element('#submit').click()
 
-    def type_subjects(self, value):
-        browser.element('#subjectsInput').type(value).press_enter()
-
-    def click_hobbies(self, value):
-        # browser.element('[for="hobbies-checkbox-1"]').click()
-        browser.all('.custom-checkbox').element_by(have.exact_text(value)).click()
-
-    def download_picture(self, file):
-        browser.element("#uploadPicture").send_keys(os.path.abspath(file))
-
-    def type_address(self, value):
-        browser.element('#currentAddress').type(value)
-
-    def type_state(self, value):
-        browser.element('#react-select-3-input').type(value).press_enter()
-
-    def type_city(self, value):
-        browser.element('#react-select-4-input').type(value).press_enter()
-
-    def click_submit(self, value):
-        browser.element(value).click()
-
-    def registered_user_data_should(self, full_name, email, gender, number, date, subject, hobbi, file, address,
-                                    state_city):
+    def registered_user_data_should(self, user: User):
+        user.date_of_birth = f'0{user.date_of_birth.day} {user.date_of_birth.strftime("%B")},{user.date_of_birth.year}'
         browser.element('.table').all('td').even.should(
             have.exact_texts(
-                full_name, email, gender, number, date, subject, hobbi, file, address, state_city,
+                f'{user.first_name} {user.last_name}',
+                user.email,
+                user.gender,
+                user.number,
+                user.date_of_birth,
+                user.subject,
+                user.hobbies,
+                user.picture,
+                user.address,
+                f'{user.state} {user.city}',
             )
         )
+
+
+# def path(file_name):
+#         return str(
+#             os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, f'tests/files/{file_name}')))
