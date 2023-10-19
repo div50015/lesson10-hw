@@ -1,6 +1,8 @@
 from selene import browser, have, be, command
 import os
 from lesson10_hw.users.user_registration import User, Gender
+from pathlib import Path
+
 
 class RegistrationPage:
     def open(self):
@@ -14,20 +16,15 @@ class RegistrationPage:
         browser.element('#lastName').type(user.last_name)
         browser.element('#userEmail').type(user.email)
         browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
-        # browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
         browser.element('#userNumber').type(user.number)
-        # browser.element('#dateOfBirthInput').click()
-        # browser.element('.react-datepicker__year-select').type('1999')
-        # browser.element('.react-datepicker__month-select').type('August')
-        # browser.element('.react-datepicker__day--09').click()
         browser.element('#dateOfBirthInput').click()
         browser.element('.react-datepicker__year-select').type(user.date_of_birth.year)
         browser.element('.react-datepicker__month-select').type(user.date_of_birth.strftime('%B'))
         browser.element(f'.react-datepicker__day--00{user.date_of_birth.day}').click()
         browser.element('#subjectsInput').type(user.subject).press_enter()
         browser.all('.custom-checkbox').element_by(have.exact_text(user.hobbies)).click()
-        # browser.element('#uploadPicture').type(path(user.picture))
-        browser.element("#uploadPicture").send_keys(os.path.abspath(f'files/{user.picture}'))
+        browser.element("#uploadPicture").send_keys(os.path.abspath(
+            Path(__file__).parent.parent.parent.joinpath(f'tests/files/{user.picture}')))
         browser.element('#currentAddress').type(user.address)
         browser.element('#react-select-3-input').type(user.state).press_enter()
         browser.element('#react-select-4-input').type(user.city).press_enter()
@@ -49,8 +46,3 @@ class RegistrationPage:
                 f'{user.state} {user.city}',
             )
         )
-
-
-# def path(file_name):
-#         return str(
-#             os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, f'tests/files/{file_name}')))
