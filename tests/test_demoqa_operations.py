@@ -8,7 +8,7 @@ def test_registered_user_data():
         first_name='Ivan',
         last_name='Petrov',
         email='petrov@mail.ru',
-        gender=Gender.male.value,
+        genders=[Gender.male.value],
         number='7928777777',
         date_of_birth=date(1999, 8, 9),
         subject='Biology',

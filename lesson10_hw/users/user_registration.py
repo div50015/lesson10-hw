@@ -15,7 +15,8 @@ class User:
     first_name: str
     last_name: str
     email: str
-    gender: Gender
+    # gender: Gender
+    genders: list[str]
     number: str
     date_of_birth: date
     subject: str

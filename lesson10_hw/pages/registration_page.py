@@ -15,7 +15,11 @@ class RegistrationPage:
         browser.element('#firstName').type(user.first_name)
         browser.element('#lastName').type(user.last_name)
         browser.element('#userEmail').type(user.email)
-        browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
+
+        # browser.all('[name=gender]').element_by(have.value(user.gender)).element('..').click()
+        for gender in user.genders:
+            browser.all('[name=gender]').element_by(have.value(gender)).element('..').click()
+
         browser.element('#userNumber').type(user.number)
         browser.element('#dateOfBirthInput').click()
         browser.element('.react-datepicker__year-select').type(user.date_of_birth.year)
@@ -36,7 +40,7 @@ class RegistrationPage:
             have.exact_texts(
                 f'{user.first_name} {user.last_name}',
                 user.email,
-                user.gender,
+                ','.join(user.genders),
                 user.number,
                 user.date_of_birth,
                 user.subject,
