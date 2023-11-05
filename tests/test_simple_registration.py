@@ -1,18 +1,15 @@
 from lesson10_hw.users.user_simple_registration import User
-from lesson10_hw.pages.simple_registration_page import SimpleUserRegistrationPage
-from dataclasses import dataclass
+from lesson10_hw.application import app
 
 
 def test_registers_user():
     admin = User(
         name='Petrov Piter',
-        email='pp@moal.com',
+        email='mail@mail.ru',
         current_address='Russia Moscow',
-        permanent_address='Russian Piter'
+        permanent_address='Russian Rostov'
     )
 
-    simple_registration_page = SimpleUserRegistrationPage()
-    simple_registration_page.open()
-    simple_registration_page.register(admin)
-    simple_registration_page.should_have_submited(admin)
-    print(admin.name)
+    app.left_panel.open_simple_registration_form()
+    app.left_panel.register(admin)
+    app.left_panel.should_have_data(admin)
